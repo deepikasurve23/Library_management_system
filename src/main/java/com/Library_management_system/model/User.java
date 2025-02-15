@@ -4,9 +4,14 @@ import com.Library_management_system.Enums.UserStatus;
 import com.Library_management_system.Enums.UserType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "\"USER\"")
@@ -16,7 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 @Builder
-public class User extends TimeStamps
+public class User extends TimeStamps implements UserDetails
 {
     //Primary key of Table
     @Id
@@ -47,6 +52,46 @@ public class User extends TimeStamps
     @OneToMany(mappedBy = "user")
     private List<Txn> txnList;
 
+    private String password;
+
+    private String authorities;
+
+    //Spring Security changes for Authentication it comes from UserDetails Class
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        String[] auth = authorities.split(",");
+       return Arrays.stream(auth).map(a -> new SimpleGrantedAuthority(a)).collect(Collectors.toList());
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }
 
 //@OneToMany- First One represents User Class, many represents Book Class

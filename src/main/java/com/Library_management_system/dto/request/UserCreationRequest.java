@@ -21,6 +21,8 @@ public class UserCreationRequest
 
     private String userPhone;
 
+    private String password;
+
     public User toUser()
     {
         return User.builder()
